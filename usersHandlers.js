@@ -31,15 +31,20 @@ const getUsersById = (req, res) => {
 };
 
 const postUsers = (req, res) => {
+  const { firstname, lastname, email, city } = req.body;
+  
   database
-  .query("select * from users")
-  .then(([users]) => {
-    res.json(users);
-  })
-  .catch((err) => {
-    console.error(err);
-    res.status(500).send("Error retrieving data from database");
-  });
+    .query(
+      "INSERT INTO users(firstname, lastname, email, city) VALUES (?, ?, ?, ?)",
+      [firstname, lastname, email, city]
+    )
+    .then(([result]) => {
+      res.location(`/api/users/${result.insertId}`).sendStatus(201);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error saving the user");
+    });
 };
 
 module.exports = {
